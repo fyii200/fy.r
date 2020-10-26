@@ -23,22 +23,21 @@ lvdat$date <- as.Date(lvdat$date, "%m/%d/%y")
 # names(lvdat)[i+11] <- i 
 # }
 
-plot_res <- unique(data.frame(eye = lvdat$eye, id = lvdat$id))
+#plot_res <- unique(data.frame(eye = lvdat$eye, id = lvdat$id))
+
+plot_res <- data.frame( id = unique( lvdat$id ), mean.s = 0, varb.s = 0)
 
 # You need to create a structure here where you SAVE the results (mean, SD) from each iteration of your loop. 
 # plot_res is good for that. So, I will just add 2 new columns (line 31, 32)
 
-plot_res$mean.sensitivity <- 0
-plot_res$patient.variability <- 0
-
 for (i in 1:length(plot_res$id)) {
-  idx <- which(lvdat$id == plot_res$id[i] & lvdat$eye == plot_res$eye[i])
   
-  d <- data.frame( lvdat[idx[1:length(idx)],2:65] )
+  idx <- plot_res$id[i]
   
-  m <- d[,-c(1:10)]
-  plot_res$mean.sensitivity[i] <- mean( apply( m, 2, sd) )
-  m.s <- mean( apply(m,2,mean) )
+  d <- subset (lvdat, id == idx, select = L1:L54 )
+  
+  plot_res$varb.s[i] <- mean( apply( d, 2, sd) )
+  plot_res$mean.s[i] <- mean( d )
   
   print(variab) #see lines 31 & 32: how do I organize all of the numerical values in a single data frame? I tried in line 33 but it did not work
   print(m.s)
