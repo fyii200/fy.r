@@ -19,16 +19,14 @@ lvdat$date <- as.Date(lvdat$date, "%m/%d/%y")
 
 plot_res <- data.frame( id = unique( lvdat$id ), mean.s = 0, varb.s = 0)
 
-for (i in 12:65) {
-  lvdat[,i] <- 16.7764 * (exp(0.078*lvdat[,i] )-1)
-}
-
 for (i in 1:length(plot_res$id)) {
   idx <- plot_res$id[i]
   
   d <- subset (lvdat, id == idx, select = L1:L54 )
+  d.t <- subset (lvdat, id == idx, select = L1:L54 )
+  d.t<- 16.7764*(exp(0.078*d.t))
   
-  plot_res$varb.s[i] <- mean( apply( d, 2, sd) )
+  plot_res$varb.s[i] <- mean( apply(d.t, 2, sd) )
   plot_res$mean.s[i] <- mean(apply (d, 2, mean))
 }                               
 plot_res2 <- plot_res [which (plot_res$varb.s > 0.01),]
