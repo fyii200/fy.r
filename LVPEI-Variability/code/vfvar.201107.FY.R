@@ -17,23 +17,23 @@ library( "visualFields" )
 lvdat    <- read.csv( "data/LVPFirst100Data_processed.2.csv", stringsAsFactors = FALSE )
 lvdat$date <- as.Date(lvdat$date, "%m/%d/%y")
 
+lvdat.h <- stack(lvdat[,12:65])
+hist(lvdat.h$values, xlab = "Sensitivity (dB)", main = "Sensitivity Distribution", ylim=c(0,10000), xlim=c(-10,40) )
+
 plot_res <- data.frame( id = unique( lvdat$id ), mean.s = 0, varb.s = 0)
 
-
+# lvdat[12:65] [lvdat[12:65] <= 0] <- NA
 
 for (i in 1:length(plot_res$id)) {
   idx <- plot_res$id[i]
   
   d <- subset (lvdat, id == idx, select = L1:L54 )
-  for (q in 1:length(d)) {
-    ifelse (d[q] == 0, d[q] <- NA, d[q] <- d[1:nrow(d),q])
-  }
+  d [d<=0] <- NA
+  d [,c(which(as.character(apply(is.na(d),2,which)) != "integer(0)"))] <- NA
   
   d.t <- subset (lvdat, id == idx, select = L1:L54 )
-  for (q in 1:length(d.t)) {
-    ifelse (d.t[q] == 0, d.t[q] <- NA, d.t[q] <- d.t[1:nrow(d.t),q])
-  }
-  
+  d.t [d.t<=0] <- NA
+  d.t [,c(which(as.character(apply(is.na(d.t),2,which)) != "integer(0)"))] <- NA
   d.t<- 16.7764*(exp(0.078*d.t))
   
   plot_res$varb.s[i] <- mean( apply(d.t, 2, sd),na.rm = TRUE)
@@ -45,5 +45,7 @@ plot_res2 <- plot_res [which (plot_res$varb.s > 0.01),]
 pdf (file="plot.pdf", width=6, height=6)
 plot (plot_res2$mean.s, plot_res2$varb.s, main = "VF Variability vs Mean Sensitivity", 
       col="blue", bty="n", pch=19, xlab="Mean Sensitivity (dB)", ylab="VF Variability (dB)",
-      xlim = c(-5,30), ylim = c(0,50) )
+      xlim = c(5,35), ylim = c(0,60) )
 dev.off()
+
+
