@@ -28,12 +28,10 @@ for (i in 1:length(plot_res$id)) {
   idx <- plot_res$id[i]
   
   d <- subset (lvdat, id == idx, select = L1:L54 )
-  d [d<=0] <- NA
-  d [,c(which(as.character(apply(is.na(d),2,which)) != "integer(0)"))] <- NA
+  d[,which(as.character(apply (d, 2, function (d) which(d <= 0))) != "integer(0)")] <- NA
   
   d.t <- subset (lvdat, id == idx, select = L1:L54 )
-  d.t [d.t<=0] <- NA
-  d.t [,c(which(as.character(apply(is.na(d.t),2,which)) != "integer(0)"))] <- NA
+  d.t[,which(as.character(apply (d.t, 2, function (d.t) which(d.t <= 0))) != "integer(0)")] <- NA
   d.t<- 16.7764*(exp(0.078*d.t))
   
   plot_res$varb.s[i] <- mean( apply(d.t, 2, sd),na.rm = TRUE)
@@ -47,5 +45,3 @@ plot (plot_res2$mean.s, plot_res2$varb.s, main = "VF Variability vs Mean Sensiti
       col="blue", bty="n", pch=19, xlab="Mean Sensitivity (dB)", ylab="VF Variability (dB)",
       xlim = c(5,35), ylim = c(0,60) )
 dev.off()
-
-
